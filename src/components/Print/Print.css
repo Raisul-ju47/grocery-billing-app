@@ -1,0 +1,28 @@
+.print-background {
+  background-color: #bee3ff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+.print-background button {
+  font-size: 2rem;
+}
+.print-background h1,
+h2,
+h3 {
+  text-align: center;
+}
+.print-container {
+  background-color: #ec645b;
+  width: 700px;
+  height: min-content;
+  border-radius: 5px;
+  padding: 20px;
+  box-shadow: 10px 10px 26px 0px rgba(0, 0, 0, 0.35);
+}
+.item-heading-container {
+  display: flex;
+  justify-content: space-between;
+}
