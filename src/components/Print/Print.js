@@ -5,7 +5,6 @@ import { useReactToPrint } from "react-to-print";
 import { useHistory } from "react-router-dom";
 
 const Print = () => {
-  
   const { value1, value2, value3, value4, value5, value6 } =
     useContext(UserContext);
   const [items, setItems] = value1;
@@ -17,8 +16,8 @@ const Print = () => {
   console.log(person);
   const history = useHistory();
   const goBack = () => {
-      history.push("home");
-  }
+    history.push("/home");
+  };
   const componentRef = useRef();
   const handlePrint = useReactToPrint({
     content: () => componentRef.current,
@@ -34,7 +33,7 @@ const Print = () => {
         </p>
         <p>{person.gender}</p>
         <p>{person.email}</p>
-        <p>{person.cell}</p>
+        <p>{person.phone}</p>
         <div className="item-heading-container">
           <p>Item Name</p>
           <p>Quantity</p>
@@ -49,7 +48,24 @@ const Print = () => {
             </div>
           ))}
         </div>
-        <h1>Total: {totalPriceCount}</h1>
+        <h1>
+          Items:
+          {items.reduce((acc, item) => {
+            return item.isSelected
+              ? acc
+              : Number.parseFloat(item.quantity) + acc;
+          }, 0)}
+        </h1>
+        <h1>
+          Total:{" "}
+          {items.reduce((acc, item) => {
+            return item.isSelected
+              ? acc
+              : Number.parseFloat(item.quantity) *
+                  Number.parseFloat(item.price) +
+                  acc;
+          }, 0)}
+        </h1>
       </div>
       <button onClick={handlePrint}>Print Invoice</button>
       <button onClick={goBack}>Go Back</button>

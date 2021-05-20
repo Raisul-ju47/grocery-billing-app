@@ -11,26 +11,29 @@ function App() {
   const [inputPrice, setInputPrice] = useState("");
   const [totalPriceCount, setTotalPriceCount] = useState(0);
   const [person, setPerson] = useState(null);
+  const [inputQuantity, setInputQuantity] = useState("");
 
   useEffect(() => {
     async function fetchData() {
       const response = await fetch("https://api.randomuser.me/");
       const data = await response.json();
       const [item] = data.results;
-      console.log(item);
+      //console.log(item);
       setPerson(item);
     }
     fetchData();
   }, []);
+
+ 
+
   return (
     <UserContext.Provider
       value={{
         value1: [items, setItems],
-        value2: [inputValue, setInputValue],
-        value3: [totalItemCount, setTotalItemCount],
+        value2: [inputValue, setInputValue],       
         value4: [inputPrice, setInputPrice],
-        value5: [totalPriceCount, setTotalPriceCount],
         value6: [person, setPerson],
+        value7: [inputQuantity, setInputQuantity]
       }}
     >
       <Router>

@@ -1,4 +1,4 @@
-import React, { useRef, useContext } from "react";
+import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -8,24 +8,38 @@ import {
   faCheckCircle,
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
-import './Home.css';
+import "./Home.css";
 import { UserContext } from "../../App";
+import BillTotal from "../BillTotal/BillTotal";
 
 const Home = () => {
-  const { value1, value2, value3, value4, value5, value6 } =
+  const { value1, value2, value3, value4, value5, value6, value7 } =
     useContext(UserContext);
   const [items, setItems] = value1;
   const [inputValue, setInputValue] = value2;
-  const [totalItemCount, setTotalItemCount] = value3;
   const [inputPrice, setInputPrice] = value4;
-  const [totalPriceCount, setTotalPriceCount] = value5;
   const [person, setPerson] = value6;
+  const [inputQuantity, setInputQuantity] = value7;
+  console.log(items);
+
+  const itemsObjectValid = () => {
+    // inputPrice is truthy and is a number
+    const priceValid = inputPrice && Number.parseFloat(inputPrice);
+
+    // inputQuantity is truthy and is a number
+    const quantityValid = inputQuantity && Number.parseFloat(inputQuantity);
+
+    //inputValue is truthy and not only whitespace characters
+    const titleValid =
+      inputValue && inputValue.split("").find((char) => char != " ");
+    return priceValid && quantityValid && titleValid;
+  };
 
   const handleAddButtonClick = () => {
     const newItem = {
       itemName: inputValue,
       price: inputPrice,
-      quantity: 0,
+      quantity: inputQuantity,
       isSelected: false,
     };
     const newItems = [...items, newItem];
@@ -33,7 +47,8 @@ const Home = () => {
     setItems(newItems);
     setInputValue("");
     setInputPrice("");
-    calculateTotal();
+    setInputQuantity("");
+    // calculateTotal();
   };
 
   const handleQuantityIncrease = (index) => {
@@ -42,16 +57,20 @@ const Home = () => {
     newItems[index].quantity++;
 
     setItems(newItems);
-    calculateTotal();
+    // calculateTotal();
   };
-
+  const quantityValid = (index) => {
+    const newItems = [...items];
+    const decreaseValid = newItems[index].quantity > 1;
+    return decreaseValid;
+  };
   const handleQuantityDecrease = (index) => {
     const newItems = [...items];
 
     newItems[index].quantity--;
 
     setItems(newItems);
-    calculateTotal();
+    // calculateTotal();
   };
 
   const toggleComplete = (index) => {
@@ -61,18 +80,7 @@ const Home = () => {
 
     setItems(newItems);
   };
-  const calculateTotal = () => {
-    const totalItemCount = items.reduce((total, item) => {
-      return total + item.quantity;
-    }, 0);
 
-    const totalPriceCount = items.reduce((total, item) => {
-      return total + item.price * item.quantity;
-    }, 0);
-
-    setTotalItemCount(totalItemCount);
-    setTotalPriceCount(totalPriceCount);
-  };
   return (
     <div className="app-background">
       <h1>Grocery Billing App</h1>
@@ -94,6 +102,7 @@ const Home = () => {
             className="add-item-input"
             placeholder="Add an item"
             type="text"
+            required
           />{" "}
           <br />
           <input
@@ -102,15 +111,28 @@ const Home = () => {
             className="add-item-input"
             placeholder="Add price"
             type="number"
-          /> <br />
+            required
+          />
+          <input
+            value={inputQuantity}
+            onChange={(event) => setInputQuantity(event.target.value)}
+            className="add-item-input"
+            placeholder="Quantity"
+            type="number"
+            required
+          />
           <FontAwesomeIcon
             icon={faPlus}
-            onClick={() => handleAddButtonClick()}
+            onClick={() => {
+              if (itemsObjectValid()) {
+                handleAddButtonClick();
+              }
+            }}
           />
         </div>
         <div className="item-list">
           {items.map((item, index) => (
-            <div className="item-container">
+            <div key={index} className="item-container">
               <div className="item-name" onClick={() => toggleComplete(index)}>
                 {item.isSelected ? (
                   <>
@@ -128,7 +150,11 @@ const Home = () => {
                 <button>
                   <FontAwesomeIcon
                     icon={faChevronLeft}
-                    onClick={() => handleQuantityDecrease(index)}
+                    onClick={() => {
+                      if (quantityValid(index)) {
+                        handleQuantityDecrease(index);
+                      }
+                    }}
                   />
                 </button>
                 <span>{item.quantity}</span>
@@ -146,7 +172,7 @@ const Home = () => {
           ))}
         </div>
         <div className="total">
-          Total Items: {totalItemCount} Price: {totalPriceCount}
+          <BillTotal />
         </div>
       </div>
       <Link to="/printInvoice">
